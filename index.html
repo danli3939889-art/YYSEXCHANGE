@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171512">
+  <meta name="description" content="式神碎片交換所，快速查看玩家需求並尋找互補交換對象。">
+  <title>百鬼碎片交換所</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="paper-noise" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a class="brand" href="#" aria-label="百鬼碎片交換所首頁">
+      <span class="brand-seal">易</span>
+      <span>
+        <strong>百鬼碎片交換所</strong>
+        <small>SHIKIGAMI FRAGMENT EXCHANGE</small>
+      </span>
+    </a>
+    <nav class="header-nav" aria-label="主要導覽">
+      <span class="firebase-status" id="firebaseStatus" data-state="local">本機模式</span>
+      <a class="active" href="#exchange">交換廣場</a>
+      <a href="#guide">交換指南</a>
+      <button class="profile-button" id="openProfile" type="button">新增交換單</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="exchange">
+      <div class="hero-orbit orbit-one" aria-hidden="true"></div>
+      <div class="hero-orbit orbit-two" aria-hidden="true"></div>
+      <div class="hero-copy">
+        <p class="eyebrow"><span></span> 寮間互助 · 以碎片結緣</p>
+        <h1><em>交換</em>流程</h1>
+        <ol class="hero-steps">
+          <li><b>STEP 1</b><span>點選右上「新增交換單」</span></li>
+          <li><b>STEP 2</b><span>填寫遊戲 ID、所需碎片以及願意交換的碎片</span></li>
+          <li><b>STEP 3</b><span>自行搜尋交換對象</span></li>
+          <li><b>STEP 4</b><span>在欲交換對象名稱旁點選「申請交換」</span></li>
+          <li><b>STEP 5</b><span>交換完成後，點擊交換群下方的「交換結束」</span></li>
+        </ol>
+        <div class="hero-actions">
+          <a class="primary-action" href="#playerList">開始尋找 <span>↘</span></a>
+          <button class="text-action" id="showMatches" type="button">只看推薦配對</button>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="moon"></div>
+        <div class="mountain mountain-back"></div>
+        <div class="mountain mountain-front"></div>
+        <div class="torii">
+          <i class="torii-top"></i>
+          <i class="torii-beam"></i>
+          <i class="torii-leg left"></i>
+          <i class="torii-leg right"></i>
+        </div>
+        <div class="floating-card card-a">碎</div>
+        <div class="floating-card card-b">契</div>
+        <div class="floating-card card-c">緣</div>
+      </div>
+    </section>
+
+    <section class="stats" aria-label="交換所統計">
+      <div><strong id="playerCount">30</strong><span>登錄陰陽師</span></div>
+      <div><strong id="fragmentCount">0</strong><span>可交換碎片</span></div>
+      <div><strong id="matchCount">0</strong><span>推薦配對</span></div>
+      <p><i></i> 交換所資料已更新</p>
+    </section>
+
+    <section class="exchange-section" id="playerList">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow"><span></span> EXCHANGE BOARD</p>
+          <h2>式神碎片交換廣場</h2>
+        </div>
+        <p>尋找與你需求互補的陰陽師</p>
+      </div>
+
+      <div class="toolbar">
+        <div class="search-box">
+          <span aria-hidden="true">⌕</span>
+          <select id="searchType" aria-label="選擇搜尋類型">
+            <option value="shikigami">搜尋式神名稱</option>
+            <option value="player">搜尋玩家名稱</option>
+          </select>
+          <select id="searchValue" aria-label="選擇搜尋名稱"></select>
+        </div>
+        <div class="filter-group" aria-label="資料篩選">
+          <select id="rarityFilter" aria-label="依稀有度篩選">
+            <option value="all">所有稀有度</option>
+            <option value="UR">UR 式神</option>
+            <option value="SP">SP 式神</option>
+            <option value="SSR">SSR 式神</option>
+            <option value="联动">聯動式神</option>
+          </select>
+          <select id="sortSelect" aria-label="排序方式">
+            <option value="recent">最近更新</option>
+            <option value="match">推薦配對優先</option>
+            <option value="name">玩家名稱</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="result-line">
+        <p>目前顯示 <strong id="resultCount">30</strong> 位玩家</p>
+        <button id="clearFilters" type="button">清除篩選</button>
+      </div>
+
+      <section class="exchange-zone active-zone">
+        <div class="zone-heading">
+          <div><i></i><h3>正在進行交換</h3></div>
+          <span><b id="activeZoneCount">0</b> 組</span>
+        </div>
+        <div class="player-grid active-grid" id="activeExchangeGrid" aria-live="polite"></div>
+        <div class="zone-empty" id="activeZoneEmpty">目前沒有進行中的交換</div>
+      </section>
+
+      <section class="exchange-zone waiting-zone">
+        <div class="zone-heading">
+          <div><i></i><h3>未在進行交換</h3></div>
+          <span><b id="waitingZoneCount">30</b> 位</span>
+        </div>
+        <div class="player-grid" id="playerGrid" aria-live="polite"></div>
+        <div class="empty-state" id="emptyState" hidden>
+          <span>尋</span>
+          <h3>沒有找到符合條件的交換單</h3>
+          <p>換個式神名稱或清除篩選再試一次。</p>
+        </div>
+      </section>
+    </section>
+
+    <section class="guide" id="guide">
+      <div>
+        <p class="eyebrow light"><span></span> EXCHANGE GUIDE</p>
+        <h2>三步完成碎片交換</h2>
+      </div>
+      <ol>
+        <li><b>壹</b><span><strong>尋找對象</strong>篩選需要與可提供的碎片</span></li>
+        <li><b>貳</b><span><strong>送出邀請</strong>確認彼此碎片種類與片數</span></li>
+        <li><b>參</b><span><strong>入寮交換</strong>約定時間並完成每日祈願</span></li>
+      </ol>
+    </section>
+  </main>
+
+  <footer>
+    <div class="brand footer-brand">
+      <span class="brand-seal">易</span>
+      <span><strong>百鬼碎片交換所</strong><small>非官方玩家交流工具</small></span>
+    </div>
+    <p>請勿在公開交換單留下帳號密碼或其他敏感資訊。</p>
+  </footer>
+
+  <dialog id="profileDialog">
+    <form method="dialog" id="profileForm">
+      <div class="dialog-heading">
+        <div>
+          <p class="eyebrow"><span></span> MY EXCHANGE LIST</p>
+          <h2 id="profileDialogTitle">新增交換單</h2>
+        </div>
+        <button class="close-button" value="cancel" aria-label="關閉" type="submit" formnovalidate>×</button>
+      </div>
+      <label>陰陽師名稱
+        <input id="profileName" list="playerNameHistory" maxlength="12" placeholder="請輸入或選擇遊戲名稱" autocomplete="off" required>
+        <datalist id="playerNameHistory"></datalist>
+      </label>
+      <label>需要的碎片
+        <select id="profileNeed"></select>
+      </label>
+      <label>所需片數<input id="profileNeedQty" type="number" min="1" max="999" step="1" inputmode="numeric" required></label>
+      <label>願意交換的碎片
+        <select id="profileOffer"></select>
+      </label>
+      <label>願意交換片數<input id="profileOfferQty" type="number" min="1" max="999" step="1" inputmode="numeric" required></label>
+      <p class="form-message" id="profileMessage"></p>
+      <div class="dialog-actions">
+        <button value="cancel" type="submit" formnovalidate>取消</button>
+        <button id="saveProfile" value="default" type="submit">儲存交換單</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="inviteDialog">
+    <div class="invite-content">
+      <button class="close-button" id="closeInvite" aria-label="關閉" type="button">×</button>
+      <span class="invite-seal">緣</span>
+      <p class="eyebrow centered"><span></span> EXCHANGE INVITATION <span></span></p>
+      <h2 id="inviteTitle">交換邀請已準備</h2>
+      <p id="inviteMessage"></p>
+      <button id="copyInvite" type="button">複製邀請內容</button>
+    </div>
+  </dialog>
+
+  <dialog id="exchangeRequestDialog">
+    <form method="dialog" id="exchangeRequestForm">
+      <div class="dialog-heading">
+        <div>
+          <p class="eyebrow"><span></span> EXCHANGE REQUEST</p>
+          <h2>申請交換</h2>
+        </div>
+        <button class="close-button" value="cancel" aria-label="關閉" type="submit">×</button>
+      </div>
+      <p class="request-from" id="requestFrom"></p>
+      <label>申請人：
+        <select id="exchangePartner" required></select>
+      </label>
+      <p class="request-hint" id="requestHint"></p>
+      <div class="dialog-actions">
+        <button value="cancel" type="submit">取消</button>
+        <button id="confirmExchange" value="default" type="submit">確認開始交換</button>
+      </div>
+    </form>
+  </dialog>
+
+  <template id="playerCardTemplate">
+    <article class="player-card">
+      <div class="card-top">
+        <div class="avatar"><span></span><i></i></div>
+        <div class="player-meta">
+          <div><h3></h3><span class="online-dot"></span><button class="request-button" type="button">申請交換</button></div>
+          <p></p>
+        </div>
+        <span class="updated"></span>
+      </div>
+      <div class="fragment-row need-row">
+        <p><span class="row-mark">求</span>需要的碎片</p>
+        <div class="fragment-info">
+          <div class="fragment-icon"><span></span></div>
+          <div><strong></strong><small></small></div>
+          <b class="quantity"></b>
+        </div>
+      </div>
+      <div class="exchange-divider"><span></span><i>⇅</i><span></span></div>
+      <div class="fragment-row offer-row">
+        <p><span class="row-mark">出</span>願意交換</p>
+        <div class="fragment-info">
+          <div class="fragment-icon"><span></span></div>
+          <div><strong></strong><small></small></div>
+          <b class="quantity"></b>
+        </div>
+      </div>
+      <button class="invite-button" type="button">送出交換邀請 <span>→</span></button>
+    </article>
+  </template>
+
+  <template id="activeExchangeTemplate">
+    <article class="active-exchange-card">
+      <div class="active-exchange-heading">
+        <div>
+          <span class="exchange-status-dot"></span>
+          <p>交換進行中</p>
+        </div>
+        <button class="cancel-exchange" type="button">取消交換</button>
+      </div>
+      <div class="exchange-members"></div>
+      <div class="exchange-link"><span></span><b>⇄</b><span></span></div>
+      <p class="exchange-note">雙方交換資訊已合併，請依約完成碎片交換。</p>
+      <div class="exchange-complete-wrap">
+        <button class="complete-exchange" type="button">交換結束</button>
+      </div>
+    </article>
+  </template>
+
+  <script src="app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.14.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.14.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="firebase-sync.js"></script>
+</body>
+</html>

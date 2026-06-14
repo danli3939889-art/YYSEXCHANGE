@@ -1,0 +1,27 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /exchangeRecords/{recordId} {
+      allow read: if request.auth != null;
+      allow create, update: if request.auth != null
+        && request.resource.data.id is int
+        && request.resource.data.id >= 1
+        && request.resource.data.id <= 30
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 1
+        && request.resource.data.name.size() <= 12
+        && request.resource.data.needQty is int
+        && request.resource.data.needQty >= 1
+        && request.resource.data.needQty <= 999
+        && request.resource.data.offerQty is int
+        && request.resource.data.offerQty >= 1
+        && request.resource.data.offerQty <= 999;
+      allow delete: if request.auth != null;
+    }
+
+    match /activeExchanges/{exchangeId} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
